@@ -16,7 +16,7 @@ In particular, it detects Cloudflare WARP VPNs and Hosting, proxy or bad IPs.
 VPNAPI.IO - To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://vpnapi.io/) 
 
 
-IPHUB.INFO - To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://iphub.info/login)
+⭐IPHUB.INFO - To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://iphub.info/login)
 
 Once you've created your account on either platform, copy the generated API key from your dashboard.
 
