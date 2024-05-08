@@ -5,18 +5,22 @@
 ## About:
 
 This is a plugin that blocks players who use **VPN/Proxy** on their PocketMine **API 5** (PMMP 5) server
+This plugin was developed for [**WINHEBERG**](https://winheberg.fr/)  customers.
+
+
+The fork's goal is to improve the basic plugin, which only embeds vpnapi.io, but with this version you'll get better detection with iphub.info.
+In particular, it detects Cloudflare WARP VPNs and Hosting, proxy or bad IPs.
 
 ## How to use? 
 
-To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://vpnapi.io/)
+VPNAPI.IO - To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://vpnapi.io/) 
+IPHUB.INFO - To start using, you need to create an account **(Free/Premium)** at: [**https://vpnapi.io/**](https://iphub.info/login)
 
-After creating the account, copy the generated key in the dashboard
+Once you've created your account on either platform, copy the generated API key from your dashboard.
 
-After copying this key, install the plugin on your server and use the command below:
+Next, navigate to the configuration file: `config.yml`
 
-- `/antivpn setkey <key>` - the `<key>` value, must be your account key generated in the **Dashboard** of **https://vpnapi.io/**
-
-After that your plugin will be working to expel players who try to use VPN 
+Finally, add the API keys under the appropriate section.
 
 ## Features:
 
@@ -30,7 +34,6 @@ After that your plugin will be working to expel players who try to use VPN
 ### Command `/antivpn`
 
 - `/antivpn` 
-  - `setkey <key>`: Set your account key (from https://vpnapi.io/)
   - `whitelist` 
     - `add`: Add players who will be ignored by the system
     - `remove`: Remove players who are being ignored
@@ -46,10 +49,16 @@ To access the **UI** just use: `/antivpn whitelist`
 
 - ⚠️ Players who have permission: `antivpn.bypass` will be ignored just like the **whitelist**
 
+## Fork author 
+
+- **SenseiTarzan**
+
+
 ## Author:
 
 - **Rajador**:
   - ✉**Discord**: [**My Group**](https://discord.gg/DV5DgDSq7W)
   - 📷**Instagram**: [**My Instagram**](https://www.instagram.com/rajadortv/)
   - 📽**YouTube**: [**Channel**](https://www.youtube.com/channel/UC1UJFxth-YRkNuLBqBYyqbA)
+ 
 
