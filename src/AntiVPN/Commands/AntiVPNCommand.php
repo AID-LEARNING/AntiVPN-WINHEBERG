@@ -17,13 +17,13 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\command;
+namespace AntiVPN\Commands;
 
-use AntiVPN\Manager;
+use AntiVPN\Main;
 
 use AntiVPN\utils\AntiVPNAPI;
 
-use AntiVPN\form\{WhiteListMainForm, ConfirmAddWhiteListForm, RemovePlayerForm, AddPlayerForm};
+use AntiVPN\Form\{WhiteListMainForm, ConfirmAddWhiteListForm, RemovePlayerForm, AddPlayerForm};
 
 use pocketmine\Server;
 
@@ -36,20 +36,20 @@ final class AntiVPNCommand extends Command
 	
 	const COMMAND_PREFIX = '§6Anti§cVPN§r  ';
 	
-	/** @var Manager **/
-	private Manager $manager;
+	/** @var Main **/
+	private Main $manager;
 	
 	/** @var String **/
 	private String $wlUsage = "§8---====(§6Anti§cVPN§f WhiteList§8)====---\n§8>  §f/{command_label} {argument_label} add <player_name> §7To add whitelisted player.\n§8>  §f/{command_label} {argument_label} remove <player_name>§7 To remove whitelisted player.\n§8>  §f/{command_label} {argument_label} list §7To see the whitelist.";
 	
 	public function __construct() 
 	{
-		$this->manager = Manager::getInstance();
+		$this->manager = Main::getInstance();
 		parent::__construct 
 		(
 			'antivpn',
 			'AntiVPN manager command',
-			"§8---====(§6Anti§cVPN§8)====---\n§8>  §f/{command_label} setkey <key>§7 To set api key\n§8>  §f/{command_label} wl §7To manage AntiVPN whitelist.",
+			"§8---====(§6Anti§cVPN§8)====---\n§8>  §f/{command_label} wl §7To manage AntiVPN whitelist.",
 			['avpn', 'antvpn', 'antiproxy']
 		);
 		$this->setPermission('antivpn.command');
@@ -63,36 +63,6 @@ final class AntiVPNCommand extends Command
 			{
 				switch (strtolower($args[0]))
 				{
-					case 'key':
-					case 'secret':
-					case 'setkey':
-					case 'setsecret':
-						if ($this->testPermission($p, 'antivpn.command.secret'))
-						{
-							if (isset($args[1]) && trim($args[1]) != '')
-							{
-								$key = $args[1];
-								if (isset($args[2]))
-								{
-									$key = $args;
-									unset($key[0]);
-									$key = implode(' ', $key);
-								}
-								
-								if (AntiVPNAPI::isValidKey($key))
-								{
-									$this->manager->setKey($key);
-									$this->manager->saveKey();
-									$p->sendMessage(self::COMMAND_PREFIX . '§7Key setted §l§aSuceffully§r§7.');
-								} else {
-									$p->sendMessage(self::COMMAND_PREFIX . "§7\"§f{$key}§7\" §cis not a valid key!");
-								}
-								
-							} else {
-								$p->sendMessage(self::COMMAND_PREFIX . "§7Use: §f/{$label} {$args[0]} <key>");
-							}
-						}
-					break;
 					case 'wl':
 					case 'white-list':
 					case 'whitelist':
@@ -154,7 +124,7 @@ final class AntiVPNCommand extends Command
 									break;
 									case 'list':
 									case 'all':
-										Manager::sendWhiteList($p);
+										Main::sendWhiteList($p);
 									break;
 									default:
 										if ($p instanceof Player) 

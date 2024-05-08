@@ -3,6 +3,9 @@ build-by-default: true
 branches:
 - main
 projects:
-  AntiVPN:
+  AntiVPN-WINHEBEGR:
     path: ""
+    libs:
+      - src: SOF3/await-generator/await-generator
+        version: ^3.6.1
 ...

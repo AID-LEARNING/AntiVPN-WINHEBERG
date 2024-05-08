@@ -17,11 +17,28 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\event;
+namespace AntiVPN\Event;
 
-use pocketmine\event\{Cancellable, CancellableTrait};
+use pocketmine\event\Event;
 
-final class StartCheckEvent extends AntiVPNEvent implements Cancellable 
+class FinishCheckEvent extends Event 
 {
-	use CancellableTrait;
+	
+	public function __construct(protected String $ip, protected String $username, private bool $isSafe) {}
+	
+	public function getUsername() : String 
+	{
+		return $this->username;
+	}
+	
+	public function getIp() : String 
+	{
+		return $this->ip;
+	}
+	
+	public function isSafe() : bool 
+	{
+		return $this->isSafe;
+	}
+	
 }

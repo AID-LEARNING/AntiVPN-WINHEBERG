@@ -19,40 +19,42 @@ declare (strict_types = 1);
 
 namespace AntiVPN;
 
+use AntiVPN\Component\AntiVPNManager;
+use AntiVPN\Exception\PlayerHasVPNException;
+use AntiVPN\Exception\StatusResponseException;
 use AntiVPN\utils\AntiVPNAPI;
 
-use AntiVPN\task\CheckTask;
+use AntiVPN\Task\CheckTask;
 
-use AntiVPN\event\StartCheckEvent;
+use AntiVPN\Event\StartCheckEvent;
 
-use AntiVPN\command\AntiVPNCommand;
+use AntiVPN\Commands\AntiVPNCommand;
 
 use pocketmine\plugin\PluginBase;
 
 use pocketmine\utils\Config;
 
 use pocketmine\player\Player;
+use pocketmine\utils\InternetException;
+use SOFe\AwaitGenerator\Await;
 
-final class Manager extends PluginBase 
+final class Main extends PluginBase
 {
 	
 	/** @var Config **/
 	private Config $whiteList;
 	
 	/** @var Config | null **/
-	private ? Config $cache = null;
+	private ?Config $cache = null;
 	
-	/** @var Manager **/
-	private static Manager $instance;
+	/** @var Main **/
+	private static Main $instance;
 	
 	/** @var bool **/
 	private bool $hasCacheEnabled = true;
 	
-	/** @var String | null **/
-	private ? String $key = null;
-	
 	/** @var String[] **/
-	private array $inProcess = array();
+	private array $inProcess = [];
 	
 	public static function getInstance() : self 
 	{
@@ -62,19 +64,18 @@ final class Manager extends PluginBase
 	public function onLoad() : void 
 	{
 		self::$instance = $this;
+		@$this->saveResource('config.yml');
+		new AntiVPNManager($this);
 	}
 	
 	public function onEnable() : void 
 	{
 		$this->getLogger()->info('Loading preferences...');
-		$this->initResource();
 		$this->loadPreferences();
 		$this->getLogger()->info('Loading WhiteList...');
 		$this->initWhiteList();
 		$this->getLogger()->info('Loading command...');
 		$this->initCommand();
-		$this->getLogger()->info('Loading key...');
-		$this->loadKey();
 		$this->getLogger()->info('Loading Listener...');
 		(new EventsListener($this));
 	}
@@ -90,13 +91,6 @@ final class Manager extends PluginBase
 			$this->whiteList->save();
 		}
 	}
-	
-	private function initResource() : void 
-	{
-		$this->saveResource('config.yml', false);
-		$this->saveResource('key.txt', false);
-	}
-	
 	private function loadPreferences() : void 
 	{
 		$hasCacheEnabled = $this->getConfigValue('enable-cache') == 'true';
@@ -126,18 +120,6 @@ final class Manager extends PluginBase
 	private function initCommand() : void 
 	{
 		$this->getServer()->getCommandMap()->register('antivpn', new AntiVPNCommand());
-	}
-	
-	private function loadKey() : void 
-	{
-		$key = file_get_contents($this->getDataFolder() . 'key.txt');
-		if (AntiVPNAPI::isValidKey($key))
-		{
-			$this->key = $key;
-			$this->getLogger()->info('Key loaded suceffully.');
-		} else {
-			$this->getLogger()->warning('Key: "' . $key . '" is not a valid key! Please set your vpnapi.io key using: /antivpn setkey <your_key>');
-		}
 	}
 	
 	public function getConfigValue(String $id, mixed $default = null) : mixed 
@@ -203,30 +185,7 @@ final class Manager extends PluginBase
 	{
 		$this->getCacheList()->set($ip, $result);
 	}
-	
-	public function hasKey() : bool 
-	{
-		return is_string($this->key) && AntiVPNAPI::isValidKey($this->key);
-	}
-	
-	public function setKey(String $newKey) : void 
-	{
-		$this->key = $newKey;
-	}
-	
-	public function getKey() : ? String 
-	{
-		return $this->key;
-	}
-	
-	public function saveKey() : void 
-	{
-		if (!empty($this->key))
-		{
-			file_put_contents($this->getDataFolder() . 'key.txt', $this->key);
-		}
-	}
-	
+
 	public function getKickScreenMessage(String $playerName) : String 
 	{
 		$message = (string) $this->getConfigValue('kick-screen-message', '§cYou can\'t use vpn here!');
@@ -261,14 +220,10 @@ final class Manager extends PluginBase
 		}
 	}
 	
-	public function startCheck(Player $player, callable $call) : bool
+	public function startCheck(Player $player, callable $callbackCheck) : bool
 	{
 		
-		if (!$this->hasKey())
-		{
-			$this->getLogger()->warning('trying to check address, but theres no api key setted!');
-			return false;
-		} else if ($this->inProcess($ip = $player->getNetworkSession()->getIp())) {
+		if ($this->inProcess($ip = $player->getNetworkSession()->getIp())) {
 			$this->getLogger()->debug('tring to check ip ' . $ip . ' but this ip already is checking by the system.');
 			return false;
 		}
@@ -277,7 +232,20 @@ final class Manager extends PluginBase
 		$ev->call();
 		if (!$ev->isCancelled())
 		{
-			$this->getServer()->getAsyncPool()->submitTask(new CheckTask($ip, strtolower($player->getName()), $this->getKey(), $call));
+			Await::g2c(AntiVPNManager::getInstance()->checkAllCheckers($player->getNetworkSession()->getIp()), /**
+ * @var (\Exception|void)[] $resolves
+			 * **/function (array $resolves) use ($player, $callbackCheck) {
+				foreach ($resolves as $key => $resolve){
+					if ($resolve instanceof \Exception)
+						Main::getInstance()->getLogger()->warning("[$key] " . $resolve->getMessage());
+				}
+				$callbackCheck($player, true);
+			}, [
+				PlayerHasVPNException::class => function () use($player, $callbackCheck) {
+					$callbackCheck($player, false);
+				}
+			]);
+			//$this->getServer()->getAsyncPool()->submitTask(new CheckTask($ip, strtolower($player->getName()), $this->getKey(), $callbackCheck));
 			return true;
 		}
 		return false;
@@ -285,7 +253,7 @@ final class Manager extends PluginBase
 	
 	public static function sendWhiteList(Player $player) : void 
 	{
-		$list = Manager::getInstance()->getWhiteList()->getAll(true);
+		$list = Main::getInstance()->getWhiteList()->getAll(true);
 		if (count($list) > 0)
 		{
 			$list = implode('§r, ', $list);

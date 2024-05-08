@@ -1,17 +1,16 @@
 ---
-name: AntiVPN
+name: AntiVPN-WINHEBEGR
 version: 2.0.1
 api: 5.0.0
-main: AntiVPN\Manager
-author: Rajador 
+main: AntiVPN\Main
+author: Rajador
+authors:
+  - SenseiTarzan
 description: 'Protect your server of proxy.'
 website: 'github.com/RajadorDev'
 permissions:
   antivpn.command:
     description: 'AntiVPN admin command permission'
-    default: op
-  antivpn.command.secret:
-    description: 'Set api key'
     default: op
   antivpn.command.whitelist:
     description: 'Manage whitelist'

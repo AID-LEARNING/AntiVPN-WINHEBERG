@@ -17,11 +17,11 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\event;
+namespace AntiVPN\Event;
 
 use pocketmine\event\{Cancellable, CancellableTrait};
 
-final class PlayerBlockedEvent extends AntiVPNEvent implements Cancellable
+final class StartCheckEvent extends AntiVPNEvent implements Cancellable 
 {
 	use CancellableTrait;
 }

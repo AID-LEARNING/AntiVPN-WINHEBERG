@@ -17,9 +17,9 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\event;
+namespace AntiVPN\Event;
 
-use AntiVPN\Manager;
+use AntiVPN\Main;
 
 use pocketmine\player\Player;
 
@@ -36,9 +36,9 @@ abstract class AntiVPNEvent extends PlayerEvent
 		$this->player = $player;
 	}
 	
-	public function getManager() : Manager 
+	public function getManager() : Main
 	{
-		return Manager::getInstance();
+		return Main::getInstance();
 	}
 	
 	public function getIp() : String 

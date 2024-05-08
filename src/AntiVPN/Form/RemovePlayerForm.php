@@ -17,11 +17,11 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\form;
+namespace AntiVPN\Form;
 
 use pocketmine\player\Player;
 
-use AntiVPN\Manager;
+use AntiVPN\Main;
 
 use AntiVPN\libs\form\CustomForm;
 
@@ -40,12 +40,12 @@ class RemovePlayerForm extends CustomForm
 				{
 					if (isset($data[self::TARGET]))
 					{
-						$list = Manager::getInstance()->getWhiteList()->getAll(true);
+						$list = Main::getInstance()->getWhiteList()->getAll(true);
 						$id = $data[self::TARGET];
 						if (isset($list[$id]))
 						{
 							$id = $list[$id];
-							Manager::getInstance()->getWhiteList()->remove($id);
+							Main::getInstance()->getWhiteList()->remove($id);
 							$player->sendMessage("§7User $id §7removed §a§lSuceffully§r§7.");
 						} else {
 							$player->sendMessage('§cUser not found!');
@@ -55,7 +55,7 @@ class RemovePlayerForm extends CustomForm
 			}
 		);
 		
-		$list = Manager::getInstance()->getWhiteList()->getAll(true);
+		$list = Main::getInstance()->getWhiteList()->getAll(true);
 		
 		$this->setTitle('§cRemove §fWhitelisted §cPlayer');
 		$this->addDropdown('§7Select the player:', $list, $default, self::TARGET);

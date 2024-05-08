@@ -10,6 +10,9 @@ alert-admin-message: '§6Anti§cVPN  §r§7Player §f{player}§7 was §cBlocked�
 # Will be send to players that is kicked out by VPN/Proxy use 
 kick-screen-message: "§cYou can't use VPN here."
 
+keys:
+  "vpnapi.io": ''
+  "iphub.info": 'MjM4OTk6Vkd5MmpoaUUxZXNoUEJqckFzYVNqN2R0c0Y4TlplRkw='
 
 
 ...

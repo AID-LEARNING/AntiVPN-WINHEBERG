@@ -17,9 +17,9 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\form;
+namespace AntiVPN\Form;
 
-use AntiVPN\Manager;
+use AntiVPN\Main;
 
 use AntiVPN\libs\form\SimpleForm;
 
@@ -51,7 +51,7 @@ class WhiteListMainForm extends SimpleForm
 						$form->sendToPlayer($player);
 					break;
 					case self::LIST:
-						Manager::sendWhiteList($player);
+						Main::sendWhiteList($player);
 					break;
 				}
 			}

@@ -19,19 +19,16 @@ declare (strict_types = 1);
 
 namespace AntiVPN;
 
-use AntiVPN\event\{StartCheckEvent, PlayerBlockedEvent, FinishCheckEvent};
-
+use AntiVPN\Event\{StartCheckEvent, PlayerBlockedEvent, FinishCheckEvent};
 use AntiVPN\utils\AntiVPNAPI;
-
 use pocketmine\event\Listener;
-
 use pocketmine\event\player\PlayerLoginEvent;
 
 final class EventsListener implements Listener 
 {
 	
-	/** @param Manager $manager **/
-	public function __construct(private Manager $manager) 
+	/** @param Main $manager **/
+	public function __construct(private Main $manager)
 	{
 		$manager->getLogger()->info('Registering listener...');
 		$manager->getServer()->getPluginManager()->registerEvents($this, $manager);
@@ -55,6 +52,8 @@ final class EventsListener implements Listener
 						$e->cancel();
 						$e->setKickMessage($this->manager->getKickScreenMessage($playerName));
 						$this->manager->getLogger()->debug("Player $playerName is BLOCKED by Cache.");
+						$event = new PlayerBlockedEvent($player);
+						$event->call();
 					} else {
 						$this->manager->getLogger()->debug("Player $playerName is allowed by Cache.");
 					}
@@ -64,17 +63,6 @@ final class EventsListener implements Listener
 			} else {
 				$this->manager->startCheck($player, AntiVPNAPI::getDefaultProcess());
 			}
-			
-			if ($e->isCancelled())
-			{
-				$event = new PlayerBlockedEvent($player);
-				$event->call();
-				if ($event->isCancelled())
-				{
-					$e->uncancel();
-				}
-			}
-			
 		}
 	}
 	

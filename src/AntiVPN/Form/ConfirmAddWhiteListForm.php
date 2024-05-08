@@ -17,9 +17,9 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\form;
+namespace AntiVPN\Form;
 
-use AntiVPN\Manager;
+use AntiVPN\Main;
 
 use pocketmine\player\Player;
 
@@ -39,7 +39,7 @@ class ConfirmAddWhiteListForm extends ConfirmForm
 	
 	public function onConfirm(Player $player) : void 
 	{
-		Manager::getInstance()->addWhitelisted($this->username);
+		Main::getInstance()->addWhitelisted($this->username);
 		$player->sendMessage('§7Player: §f' . $this->username . ' §7added §a§lSuceffully§r§7.');
 	}
 	

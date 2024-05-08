@@ -17,7 +17,7 @@ declare (strict_types = 1);
 
 */
 
-namespace AntiVPN\form;
+namespace AntiVPN\Form;
 
 use AntiVPN\libs\form\CustomForm;
 
